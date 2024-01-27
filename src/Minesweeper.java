@@ -8,6 +8,7 @@ public class Minesweeper {
 	public final char[][] GAME_BOARD; // for display to the user
 	public boolean shouldGameContinue; // to check weather game should continue or not.
 	private boolean isFirstStep; // to check if it is the first step of the user.
+	private final int BOMB_COUNT;
 
 	Minesweeper (int boardSize) {
 		this.BOARD_SIZE = boardSize;
@@ -15,6 +16,7 @@ public class Minesweeper {
 		this.GAME_BOARD = new char[boardSize][boardSize];
 		this.shouldGameContinue = true;
 		this.isFirstStep = true;
+		this.BOMB_COUNT = 2 * boardSize - 1;
 
 		for (char[] line : GAME_BOARD) {
 			Arrays.fill(line, '■');
@@ -44,7 +46,7 @@ public class Minesweeper {
 
 	// to fill in bombs at random places in the board.
 	private void fillBombs () {
-		int remainingBombCount = BOARD_SIZE;
+		int remainingBombCount = BOMB_COUNT;
 		Random random = new Random();
 
 		while (remainingBombCount > 0) {
@@ -106,7 +108,7 @@ public class Minesweeper {
 			isFirstStep = false;
 		}
 
-		if (Character.isDigit(GAME_BOARD[row][col]) || GAME_BOARD[row][col] == ' ') // each revealed block will have value b/w 0 - 9 or a space.
+		if (Character.isDigit(GAME_BOARD[row][col]) || GAME_BOARD[row][col] == ' ') // each revealed block will have value b/w 1 - 9 or a space.
 			return "Invalid Input : Block already revealed! \n\n";
 
 		if (INTERNAL_BOARD[row][col] == -1) { // selected block is a bomb
@@ -114,7 +116,7 @@ public class Minesweeper {
 			return "GAME OVER! You pressed a mine! \n\n" + printInternalMine() + "\n" + "-".repeat(40);
 		}
 
-		else {
+		else { // selected block is not a bomb and a valid press.
 			updateGameField (row, col);
 			if (checkWinningStatus ()) {
 				shouldGameContinue = false;
@@ -169,7 +171,7 @@ public class Minesweeper {
 				nonRevealedCount += c == '■' ? 1 : 0;
 
 		// checking if the boxes which are not revealed are equal to bombCount.
-		return nonRevealedCount == BOARD_SIZE;
+		return nonRevealedCount == BOMB_COUNT;
 	}
 
 	// for printing the solution after the game is over by losing.
